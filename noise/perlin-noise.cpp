@@ -3,20 +3,7 @@
 #include <cmath>    
 using namespace std;
 
-//General steps to perlin noise generation
-//1. define frequency of noise and resolution of output
-//2. define 2d noise map array, size resolution
-//2. calculate perlin noise for each frequency/resolution point
-//This is done by...
-//3. calculate the distance to the 4 corners as weighting
-//4. generate gradient vectors for each corner
-//5. calculate dot product between gradient and point for each corner
-//6. cubic interpolate
-//7. scale value to be 0 to 255 (or a custom scale)
-//8. output and store this value inside noise map
-//9. perform this for every pixel
-//Future goal: implement marching squares algorithm
-
+//2d vector struct with i and j dimensions, mainly used for gradients
 typedef struct{
     float i;
     float j;
@@ -24,22 +11,60 @@ typedef struct{
 
 class perlinNoise{
     private:
+
+        //resolution of output
         int resX;
         int resY;
         int freq;
 
+        //size of grid
         float freqX; 
         float freqY;
 
+        //use pointer to dynamically allocate number of gradients
         int numGradients; 
-        int seed;
         vector* gradients;
+
+        int seed;
+
+        //function to generate unit gradients
+        void generateGradients(int numGradients, vector* gradients, int seed){
+
+            //gradients have random i and j vectors between -0.5 and 0.5
+            for(int i=0;i<numGradients;i++){
+                gradients[i].i = ((float)rand() / (RAND_MAX))-0.5;
+                gradients[i].j = ((float)rand() / (RAND_MAX))-0.5;
+
+                //normalizes vector size, ensuring they are all size 1
+                double mag = sqrt(gradients[i].i * gradients[i].i + gradients[i].j * gradients[i].j);
+                gradients[i].i /= mag;
+                gradients[i].j /= mag;
+
+            }
+
+            //testing purposes: printing gradients list
+            cout << "Initialized object. " << endl << "freqx and freqy:" << freqX << " " << freqY <<". Num gradients: " << numGradients << endl;
+            cout << "SEED: " << seed << endl;
+            int L = 0;
+            for(int i=0;i<11;i++){
+                for(int j=0;j<6;j++){
+                    cout.precision(3);
+                    cout << "[" << gradients[L].i << "," << gradients[L].j << "] ";
+                    L++;
+                }
+                cout << endl;
+
+            }
+            
+        }
 
 
     public:
 
-        perlinNoise(int resolution_x, int resolution_y, int frequency){
-            seed = 237469;
+        perlinNoise(int resolution_x, int resolution_y, int frequency, int islandSeed){
+
+            //use user-defined seed to get reproducable results
+            seed = islandSeed;
             srand(seed);
 
             resX = resolution_x;
@@ -49,25 +74,18 @@ class perlinNoise{
             freqX = (float)resX / (float)freq;
             freqY = (float)resY / (float)freq;
 
+            //calculate number of gradients needed (one for each corner of every box)
             numGradients = (freqX -1) * (freqY - 1) + (freqX-1)*2 + (freqY -1)*2 + 4;
+
+            //dynamically create array to store gradient values
             gradients = new vector[numGradients];
 
-            for(int i=0;i<numGradients;i++){
-                gradients[i].i = (float)rand() / (RAND_MAX);
-                gradients[i].j = (float)rand() / (RAND_MAX);
-            }
-             
-            cout << "Initialized object. " << endl << "freqx and freqy:" << freqX << " " << freqY <<". Num gradients: " << numGradients << endl;
-            cout << "SEED: " << seed << endl;
-            for(int i=0;i<11;i++){
-                for(int j=0;j<6;j++){
-                    cout.precision(2);
-                    cout << "[" << gradients[j+i].i << "," << gradients[j+1].j << "] ";
-                }
-                cout << endl;
-            }
-            
+            //generate random gradients
+            generateGradients(numGradients, gradients, seed);
+
         }
+
+
 
         int noise(float x, float y){
 
@@ -94,9 +112,11 @@ int main(){
     int frequency = 10; //increase to get more detail. please use multiples of 10.
     int octaves = 10;
 
+    int islandSeed = 3;
+
     int perlinMap[resolution_x][resolution_y];
 
-    perlinNoise a(resolution_x, resolution_y, frequency);
+    perlinNoise a(resolution_x, resolution_y, frequency, islandSeed);
 
 
     return 0;

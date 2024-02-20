@@ -10,6 +10,9 @@ SRC = perlin-noise.cpp
 # Executable name
 EXEC = noise
 
+CFLAGS=-Wall -Wextra -O2 -Wno-unused-parameter -Wno-unused-variable
+
+
 # Default target
 all: $(EXEC)
 
