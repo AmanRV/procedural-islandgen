@@ -1,4 +1,3 @@
-
 # procedural-islandgen
 
 This is a program which procedurally generates a 2D island based on frequency, octave, and seed characteristics inputted by the user. Uses Perlin Noise to generate the islands. Built in C++ and Python.
@@ -30,6 +29,10 @@ Low Frequency Island
 
 
 
+
+## To-do
+- Implement multiple biomes
+- Export to PNG/JPEG option
 
 ## Acknowledgements
 Resources used to understand the concept of Perlin Noise Generation.
