@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>    
+#include <fstream>
 using namespace std;
 
 //2d vector struct with i and j dimensions, mainly used for gradients
@@ -114,18 +115,21 @@ class perlinNoise{
             int x1 = x0+1;
             int y1 = y0+1;
 
-            //distance from corner
+            //distance from corner. These will be used as weights for interpolation.
             float dx = x-(float)x0;
             float dy = y-(float)y0;
 
+            //find the dot product on the top corners and interpolate them
             float topLeft = dotProd(x,y,x0, y0, gradients);
             float topRight = dotProd(x,y,x1, y0, gradients);
             float r1 = cubicInterpolate(topLeft, topRight, dx);
 
+            //find the dot product on the bottom corners and interpolate them
             float bottomLeft = dotProd(x,y,x0, y1, gradients);
             float bottomRight = dotProd(x,y,x1, y1, gradients);
             float r2 = cubicInterpolate(bottomLeft, bottomRight, dx);
 
+            //interpolate the top and bottom corners toether for a final value
             float finalVal = cubicInterpolate(r1, r2, dy);
             //cout << "X,Y,Result = [" << x << "," << y << "," << finalVal << "]";
             return finalVal;
@@ -136,13 +140,16 @@ class perlinNoise{
 int main(){
     
     //output should be 500x500 pixels
-    const int resolution_x = 300;
-    const int resolution_y = 300;
+    const int resolution_x = 600;
+    const int resolution_y = 600;
 
-    int frequency = 100; //increase to get more detail. please use multiples of 10.
-    int octaves = 10;
+    int frequency_constant = 200;
+    int weighting_constant = 1;
+    int frequency = frequency_constant; //increase to get more detail. please use multiples of 10.
+    int octaves = 8;
+    float weighting = weighting_constant;
 
-    int islandSeed = 134;
+    int islandSeed = 1287327982;
 
     float perlinMap[resolution_x][resolution_y];
 
@@ -151,26 +158,56 @@ int main(){
     
     for(int i=0; i<resolution_y; i++){
         for(int j=0;j<resolution_x;j++){
-            //cout << i/(float)frequency << " ";
-            float aa = a.noise(j/(float)frequency, i/(float)frequency);
+
+            float aa = 0;
+
+            weighting = weighting_constant;
+            frequency = frequency_constant;
+
+            for(int x = 0;x<octaves;x++){
+                aa += a.noise(j/(float)frequency, i/(float)frequency)*weighting;
+                frequency*=2;
+                weighting /= 1.1;
+            }
+            
             //float scaledValue = ((aa + 0.1) / 0.2) * 255.0;
             //cout << j << "," << i << "," << aa << endl;
-            perlinMap[j][i] = (aa+0.5)*255;
+            aa = (aa+0.5)*255;
+
+            if (aa < 0)
+                aa = 0;
+            else if (aa > 255)
+                aa = 255;
+
+            perlinMap[j][i] = aa;
         }
     }
 
-    cout << "[";
-    for(int i=0; i<resolution_y; i++){
-        for(int j=0;j<resolution_x;j++){
-            cout.precision(5);
-            cout << perlinMap[j][i] << ",";
+    // cout << "[";
+    // for(int i=0; i<resolution_y; i++){
+    //     for(int j=0;j<resolution_x;j++){
+    //         cout.precision(5);
+    //         cout << perlinMap[j][i] << ",";
+    //     }
+    //     cout << endl;
+    // }
+    // cout << "]";
+
+    ofstream outfile("output.txt", ofstream::trunc);
+    //outfile << "[";
+
+    for(int i=0;i<resolution_x;i++){
+        for(int j=0;j<resolution_y;j++){
+            outfile << perlinMap[i][j];
+            outfile << " ";
         }
-        cout << endl;
+        outfile << endl;
     }
-    cout << "]";
+
+
+
+
+    cout << "Finished generating map." << endl;
     
-
-
-
     return 0;
 }
