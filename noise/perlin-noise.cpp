@@ -105,6 +105,10 @@ class perlinNoise{
 
         }
 
+        ~perlinNoise(){
+            delete[] gradients;
+        }
+
 
 
         float noise(float x, float y){
