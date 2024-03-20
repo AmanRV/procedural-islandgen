@@ -144,17 +144,20 @@ class perlinNoise{
 int main(int arguments_recieved, char* argument_string[]){
 
     int islandSeed;
+    int multiplier;
     
-    if(arguments_recieved != 2){
+    if(arguments_recieved != 3){
         islandSeed = 500;
+        multiplier = 5;
     } else{
         islandSeed = atoi(argument_string[1]);
+        multiplier = atoi(argument_string[2]);
     }
     //output should be 500x500 pixels
-    const int resolution_x = 650;
-    const int resolution_y = 650;
+    const int resolution_x = 600;
+    const int resolution_y = 600;
 
-    int frequency_constant = 50;
+    int frequency_constant = 10*multiplier;
     int weighting_constant = 1;
     int frequency = frequency_constant; //increase to get more detail. please use multiples of 10.
     int octaves = 10;
