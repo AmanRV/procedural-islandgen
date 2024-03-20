@@ -141,19 +141,26 @@ class perlinNoise{
         }
 };
 
-int main(){
-    
-    //output should be 500x500 pixels
-    const int resolution_x = 600;
-    const int resolution_y = 600;
+int main(int arguments_recieved, char* argument_string[]){
 
-    int frequency_constant = 200;
+    int islandSeed;
+    
+    if(arguments_recieved != 2){
+        islandSeed = 500;
+    } else{
+        islandSeed = atoi(argument_string[1]);
+    }
+    //output should be 500x500 pixels
+    const int resolution_x = 650;
+    const int resolution_y = 650;
+
+    int frequency_constant = 50;
     int weighting_constant = 1;
     int frequency = frequency_constant; //increase to get more detail. please use multiples of 10.
-    int octaves = 8;
+    int octaves = 10;
     float weighting = weighting_constant;
 
-    int islandSeed = 1287327982;
+
 
     float perlinMap[resolution_x][resolution_y];
 
