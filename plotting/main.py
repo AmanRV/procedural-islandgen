@@ -1,12 +1,15 @@
 import subprocess
 import random
 import plot
+import os
 
 island_seed = random.randint(1,99999999)
+multipliers = [1, 3, 6, 8, 10, 12, 15]
+multiplier = random.choice(multipliers)
 
 def generate_data():
     subprocess.run(["g++", "perlin-noise.cpp", "-o", "noise"])
-    subprocess.call(["./noise", str(island_seed)])
+    subprocess.call(["./noise", str(island_seed), str(multiplier)])
 
 
 
@@ -22,7 +25,7 @@ def plot_island():
     selected_color = names[random_color]
     color_array = colors[random_color]
 
-    plot.generate_plot(island_seed, color_array, selected_color)
+    plot.generate_plot(island_seed, color_array, selected_color, multiplier)
 
 generate_data()
 plot_island()

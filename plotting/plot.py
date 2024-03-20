@@ -7,7 +7,7 @@ import os
 
 
 
-def generate_plot(seed, color_array, selected_color):
+def generate_plot(seed, color_array, selected_color, frequency):
     current_dir = os.getcwd();
     current_dir = os.path.dirname(current_dir)
     filepath = os.path.join(current_dir, "noise", "output.txt")
@@ -22,7 +22,7 @@ def generate_plot(seed, color_array, selected_color):
 
 
     # Plot the data with custom colormap and normalization
-    plt.title(selected_color + " Island seed: " + str(seed))
+    plt.title(selected_color + " Island seed: " + str(seed)+ ", Frequency: " + str(frequency*10))
     plt.imshow(array, cmap=custom_cmap, norm=norm)
     plt.colorbar()
     plt.axis('off')
