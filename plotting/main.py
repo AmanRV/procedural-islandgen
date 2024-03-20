@@ -4,7 +4,7 @@ import plot
 import os
 
 island_seed = random.randint(1,99999999)
-multipliers = [1, 3, 6, 8, 10, 12, 15]
+multipliers = [1,2,3,4,5,6,10,12,15]
 multiplier = random.choice(multipliers)
 
 def generate_data():
